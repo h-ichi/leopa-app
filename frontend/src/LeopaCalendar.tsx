@@ -21,19 +21,25 @@ const openDB = (): Promise<IDBDatabase> => {
   });
 };
 
-const saveLogsToDB = async (logs: DailyLog[]) => {
+// 保存関数をPromiseでラップ
+const saveLogsToDB = async (logs: DailyLog[]): Promise<void> => {
   const db = await openDB();
-  const tx = db.transaction(STORE_NAME, 'readwrite');
-  const store = tx.objectStore(STORE_NAME);
-  logs.forEach(log => store.put(log));
-  return tx.complete;
+  return new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    logs.forEach(log => store.put(log));
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
 };
 
+// 読み込み関数
 const loadLogsFromDB = async (): Promise<DailyLog[]> => {
   const db = await openDB();
-  const tx = db.transaction(STORE_NAME, 'readonly');
-  const store = tx.objectStore(STORE_NAME);
   return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
     const request = store.getAll();
     request.onsuccess = () => resolve(request.result.length ? request.result : sampleLogs);
     request.onerror = () => reject(request.error);
@@ -45,14 +51,14 @@ const LeopaCalendar: React.FC = () => {
 
   // 初期ロード：IndexedDBから取得
   useEffect(() => {
-    loadLogsFromDB().then(setLogs);
+    loadLogsFromDB().then(setLogs).catch(console.error);
   }, []);
 
   // データ変更時にIndexedDBに保存
   const handleChange = (index: number, field: keyof DailyLog, value: string | boolean) => {
     setLogs(prev => {
       const newLogs = prev.map((log, i) => i === index ? { ...log, [field]: value } : log);
-      saveLogsToDB(newLogs);
+      saveLogsToDB(newLogs).catch(console.error);
       return newLogs;
     });
   };
@@ -94,61 +100,38 @@ const LeopaCalendar: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {/* --- 例の1行目 --- */}
-          <tr className="bg-yellow-50">
-            <td className="border border-gray-300 px-2 py-1">例</td>
-            <td className="border border-gray-300 px-2 py-1">金</td>
-            <td className="border border-gray-300 px-2 py-1 w-16">28℃</td>
-            <td className="border border-gray-300 px-2 py-1 w-16">60％</td>
-            <td className="border border-gray-300 px-2 py-1">レッドローチ3匹</td>
-            <td className="border border-gray-300 px-2 py-1"><input type="checkbox" disabled className="mx-auto" /></td>
-            <td className="border border-gray-300 px-2 py-1"><input type="checkbox" disabled className="mx-auto" /></td>
-            <td className="border border-gray-300 px-2 py-1"><input type="checkbox" disabled className="mx-auto" /></td>
-            <td className="border border-gray-300 px-2 py-1"><input type="checkbox" disabled className="mx-auto" /></td>
-            <td className="border border-gray-300 px-2 py-1">例：夜に活動多め</td>
-          </tr>
-
-          {/* --- 実際のデータ行 --- */}
           {logs.map((log, i) => (
             <tr key={log.date} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
               <td className="border border-gray-300 px-2 py-1">{log.date}</td>
               <td className="border border-gray-300 px-2 py-1">{log.dayOfWeek}</td>
-
               <td className="border border-gray-300 px-2 py-1 w-16">
                 <input type="text" value={log.temp} onChange={e => handleChange(i, 'temp', e.target.value)}
                   className="w-16 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1 w-16">
                 <input type="text" value={log.humidity} onChange={e => handleChange(i, 'humidity', e.target.value)}
                   className="w-16 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1">
                 <input type="text" value={log.feeding} onChange={e => handleChange(i, 'feeding', e.target.value)}
                   className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1">
                 <input type="checkbox" checked={log.waterChange} onChange={e => handleChange(i, 'waterChange', e.target.checked)}
                   className="mx-auto" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1">
                 <input type="checkbox" checked={log.cleaning} onChange={e => handleChange(i, 'cleaning', e.target.checked)}
                   className="mx-auto" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1">
                 <input type="checkbox" checked={log.poop} onChange={e => handleChange(i, 'poop', e.target.checked)}
                   className="mx-auto" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1">
                 <input type="checkbox" checked={log.shed} onChange={e => handleChange(i, 'shed', e.target.checked)}
                   className="mx-auto" />
               </td>
-
               <td className="border border-gray-300 px-2 py-1">
                 <input type="text" value={log.notes} onChange={e => handleChange(i, 'notes', e.target.value)}
                   className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" />
@@ -158,7 +141,6 @@ const LeopaCalendar: React.FC = () => {
         </tbody>
       </table>
 
-      {/* CSV出力ボタン */}
       <button onClick={exportCSV}
         className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
         CSV出力
