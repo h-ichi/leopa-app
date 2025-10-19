@@ -10,3 +10,7 @@ export interface DailyLog {
   shed: boolean;
   notes: string;
 }
+
+
+
+
