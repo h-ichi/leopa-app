@@ -46,13 +46,23 @@ const loadLogsFromDB = async (): Promise<DailyLog[]> => {
   });
 };
 
-// チェックボックス用フィールド定義（日本語ラベル）
+// チェックボックス項目
 const checkboxFields: { key: keyof DailyLog; label: string }[] = [
   { key: 'waterChange', label: '水換え' },
   { key: 'cleaning', label: '掃除' },
   { key: 'poop', label: '排便' },
   { key: 'shed', label: '脱皮' },
 ];
+
+// 色マップ
+const colorMap: Record<string, string> = {
+  給餌: 'text-green-600',
+  水換え: 'text-blue-600',
+  掃除: 'text-orange-600',
+  排便: 'text-purple-600',
+  脱皮: 'text-cyan-600',
+  メモ: 'text-red-600',
+};
 
 const LeopaCalendar: React.FC = () => {
   const [logs, setLogs] = useState<DailyLog[]>(sampleLogs);
@@ -62,7 +72,6 @@ const LeopaCalendar: React.FC = () => {
     loadLogsFromDB().then(setLogs).catch(console.error);
   }, []);
 
-  // データ変更
   const handleChange = (field: keyof DailyLog, value: string | boolean) => {
     if (!selectedDate) return;
     const newLogs = logs.map(log =>
@@ -94,41 +103,65 @@ const LeopaCalendar: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  // カレンダー生成（10月）
+  // カレンダー作成（10月）
   const daysInMonth = 31;
   const calendarRows: (string | null)[][] = [];
   let week: (string | null)[] = Array(7).fill(null);
   for (let day = 1; day <= daysInMonth; day++) {
-    const weekday = new Date(2025, 9, day).getDay(); // 10月 = 9
-    week[weekday] = `2025-10-${String(day).padStart(2,'0')}`;
+    const weekday = new Date(2025, 9, day).getDay();
+    week[weekday] = `2025-10-${String(day).padStart(2, '0')}`;
     if (weekday === 6 || day === daysInMonth) {
       calendarRows.push(week);
       week = Array(7).fill(null);
     }
   }
 
+  // カレンダーに表示する項目（色付き）
+  const getDisplayText = (log: DailyLog): { label: string; color: string }[] => {
+    const displayItems: { label: string; color: string }[] = [];
+    if (log.feeding) displayItems.push({ label: '給餌', color: colorMap['給餌'] });
+    if (log.waterChange) displayItems.push({ label: '水換え', color: colorMap['水換え'] });
+    if (log.cleaning) displayItems.push({ label: '掃除', color: colorMap['掃除'] });
+    if (log.poop) displayItems.push({ label: '排便', color: colorMap['排便'] });
+    if (log.shed) displayItems.push({ label: '脱皮', color: colorMap['脱皮'] });
+    if (log.notes) displayItems.push({ label: 'メモ', color: colorMap['メモ'] });
+    return displayItems;
+  };
+  
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold mb-4">10月 レオパ管理カレンダー</h2>
 
-      <table className="w-full border-collapse border border-gray-300 text-center">
+      <table className="w-full border-collapse border border-gray-300 text-center text-sm">
         <thead>
           <tr>{DAYS.map(d => <th key={d} className="border border-gray-300 px-2 py-1">{d}</th>)}</tr>
         </thead>
         <tbody>
           {calendarRows.map((week, i) => (
             <tr key={i}>
-              {week.map((date, j) => (
-                <td
-                  key={j}
-                  className="border border-gray-300 h-20 w-16 cursor-pointer"
-                  onClick={() =>
-                    date && setSelectedDate(logs.find(l => l.date === date) || null)
-                  }
-                >
-                  {date ? Number(date.slice(-2)) : ''}
-                </td>
-              ))}
+              {week.map((date, j) => {
+                const log = logs.find(l => l.date === date);
+                const displayItems = log ? getDisplayText(log) : [];
+                return (
+                  <td
+                    key={j}
+                    className="border border-gray-300 h-20 w-20 align-top cursor-pointer hover:bg-indigo-50"
+                    onClick={() => date && setSelectedDate(log || null)}
+                  >
+                    {date && (
+                      <div>
+                        <div className="font-semibold">{Number(date.slice(-2))}</div>
+                        {displayItems.map((item, idx) => (
+                          <div key={idx} className={`text-[10px] font-medium ${item.color}`}>
+                            {item.label}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
@@ -175,7 +208,6 @@ const LeopaCalendar: React.FC = () => {
                 />
               </div>
 
-              {/* チェックボックス */}
               {checkboxFields.map(field => (
                 <div key={field.key}>
                   <label>{field.label}: </label>
@@ -199,7 +231,7 @@ const LeopaCalendar: React.FC = () => {
             </div>
 
             <button
-              className="mt-2 px-3 py-1 bg-indigo-500 text-white rounded"
+              className="mt-3 px-3 py-1 bg-indigo-500 text-white rounded"
               onClick={() => setSelectedDate(null)}
             >
               閉じる
