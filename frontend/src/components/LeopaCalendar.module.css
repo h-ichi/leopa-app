@@ -12,13 +12,7 @@
 }
 
 
-.leopaText {
-  @apply relative font-extrabold text-4xl;
-  background: linear-gradient(135deg, #6b8e23, #9acd32);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
-}
+
 
 /* 文字の上に薄く鱗パターンを重ねる */
 .leopaText::before {
@@ -31,34 +25,13 @@
 }
 
 
-
-/* カレンダー表：ここで爬虫類の鱗っぽいデザインを表現 */
-.calendarTable {
-  @apply w-full border-collapse rounded-xl overflow-hidden shadow-lg;
-  border: 2px solid #4a6b2e;
-
-  /* 鱗っぽいパターン（小さめ・控えめ） */
-  background: linear-gradient(145deg, #3a4d1c, #2f3d16);
-  background-image: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 12px 12px;
-}
-
 /* 曜日ヘッダ */
 .calendarHeader th {
   @apply bg-green-600 text-yellow-100 px-4 py-2 font-semibold;
   text-shadow: 0 1px 2px #000;
 }
 
-/* カレンダー本体のセル */
-.calendarBody td {
-  @apply border border-green-700 p-2 align-top transition-colors duration-300 cursor-pointer rounded-sm;
-  background: rgba(30, 45, 15, 0.8);
-  backdrop-filter: blur(3px);
-}
 
-.calendarBody td:hover {
-  background: linear-gradient(145deg, #4c6b2a, #3f5720);
-}
 
 /* 日付番号 */
 .dateNumber {

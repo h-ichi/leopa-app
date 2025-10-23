@@ -4,7 +4,7 @@ import type { DailyLog } from '../types';
 interface Props {
   log: DailyLog;
   checkboxFields: { key: keyof DailyLog; label: string }[];
-  onChange: (field: keyof DailyLog, value: string | boolean) => void;
+  onChange: (field: keyof DailyLog, value: string | boolean | string) => void;
   onClose: () => void;
 }
 
@@ -15,84 +15,85 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
 
     const reader = new FileReader();
     reader.onload = () => {
-      onChange('photoBase64', reader.result as string); // Base64形式で保存
+      onChange('photoBase64', reader.result as string);
     };
     reader.readAsDataURL(file);
   };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white p-4 rounded w-full max-w-sm">
-        <h3 className="text-lg font-semibold mb-2">{log.date} の記録</h3>
-        <div className="space-y-2">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white p-4 rounded-xl w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-lg">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">{log.date} の記録</h3>
+
+        <div className="space-y-3">
           <div>
-            <label>気温(℃): </label>
+            <label className="block mb-1 text-gray-600">気温(℃)</label>
             <input
               type="text"
               value={log.temp}
               onChange={e => onChange('temp', e.target.value)}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
+
           <div>
-            <label>湿度(%): </label>
+            <label className="block mb-1 text-gray-600">湿度(%)</label>
             <input
               type="text"
               value={log.humidity}
               onChange={e => onChange('humidity', e.target.value)}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
+
           <div>
-            <label>給餌: </label>
+            <label className="block mb-1 text-gray-600">給餌</label>
             <input
               type="text"
               value={log.feeding}
               onChange={e => onChange('feeding', e.target.value)}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
 
           {checkboxFields.map(field => (
-            <div key={field.key}>
-              <label>{field.label}: </label>
+            <div key={field.key} className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={log[field.key] as boolean}
+                checked={!!log[field.key]}
                 onChange={e => onChange(field.key, e.target.checked)}
+                className="h-5 w-5 text-indigo-500 rounded border-gray-300"
               />
+              <label className="text-gray-700">{field.label}</label>
             </div>
           ))}
 
           <div>
-            <label>メモ: </label>
+            <label className="block mb-1 text-gray-600">メモ</label>
             <input
               type="text"
               value={log.notes}
               onChange={e => onChange('notes', e.target.value)}
-              className="w-full border px-2 py-1 rounded"
+              className="w-full border px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
-        </div>
-        {/* 写真アップロード */}
-        <div className="mt-4">
-          <label className="block mb-1 font-medium text-gray-700">写真アップロード</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoUpload}
-            className="text-sm"
-          />
-          {log.photoBase64 && (
-            <img
-              src={log.photoBase64}
-              alt="uploaded"
-              className="mt-3 w-full h-40 object-cover rounded border"
-            />
-          )}
+
+          {/* 写真アップロード */}
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">写真アップロード</label>
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} className="text-sm" />
+            {log.photoBase64 && (
+              <img
+                src={log.photoBase64}
+                alt="uploaded"
+                className="mt-2 w-full h-40 object-cover rounded border"
+              />
+            )}
+          </div>
         </div>
 
         <button
-          className="mt-3 px-3 py-1 bg-indigo-500 text-white rounded"
+          className="mt-4 w-full px-3 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors"
           onClick={onClose}
         >
           閉じる

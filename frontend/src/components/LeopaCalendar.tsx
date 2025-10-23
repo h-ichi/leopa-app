@@ -64,16 +64,18 @@ const LeopaCalendar: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<DailyLog | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
+  // ログ読み込み
   useEffect(() => {
     loadLogsFromDB().then(setLogs).catch(console.error);
   }, []);
 
-  // localStorageから背景画像をロード
+  // 背景画像を localStorage からロード
   useEffect(() => {
     const savedImage = localStorage.getItem('leopaCalendarBg');
     if (savedImage) setBackgroundImage(savedImage);
   }, []);
 
+  // ログ更新
   const handleChange = (field: keyof DailyLog, value: string | boolean) => {
     if (!selectedDate) return;
     const newLogs = logs.map(log =>
@@ -81,7 +83,7 @@ const LeopaCalendar: React.FC = () => {
     );
     setLogs(newLogs);
     saveLogsToDB(newLogs).catch(console.error);
-    setSelectedDate({ ...selectedDate, [field]: value });
+    setSelectedDate(prev => (prev ? { ...prev, [field]: value } : null));
   };
 
   // 背景画像アップロード
@@ -119,41 +121,40 @@ const LeopaCalendar: React.FC = () => {
   return (
     <div className={styles.calendarContainer}>
       <h2 className={styles.calendarTitle}>10月 レオパ飼育カレンダー</h2>
-      
-      {/* 背景設定 */}
-<div className="flex items-center gap-3 mb-4">
-  <label
-    htmlFor="bg-upload"
-    className="cursor-pointer px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-200"
-  >
-    カレンダー背景を設定
-  </label>
-  <input
-    id="bg-upload"
-    type="file"
-    accept="image/*"
-    className="hidden"
-    onChange={handleImageUpload}
-  />
-  {backgroundImage && (
-    <button
-      className="px-3 py-1 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 transition-colors duration-200"
-      onClick={handleRemoveImage}
-    >
-      削除
-    </button>
-  )}
-</div>
-  
 
+      {/* 背景設定 */}
+      <div className="flex items-center gap-3 mb-4">
+        <label
+          htmlFor="bg-upload"
+          className="cursor-pointer px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-200"
+        >
+          カレンダー背景を設定
+        </label>
+        <input
+          id="bg-upload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+        {backgroundImage && (
+          <button
+            className="px-3 py-1 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 transition-colors duration-200"
+            onClick={handleRemoveImage}
+          >
+            削除
+          </button>
+        )}
+      </div>
 
       {/* 背景付きカレンダー */}
       <div
         className={styles.calendarBackground}
         style={{
           backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-          backgroundSize: 'cover',
+          backgroundSize: 'contain',
           backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <table className={styles.calendarTable}>
