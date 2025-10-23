@@ -4,6 +4,7 @@ import { sampleLogs } from '../data';
 import ExportZipButton from './ExportZipButton.tsx';
 import LogModal from './LogModal';
 import CalendarCell from './CalendarCell';
+import styles from './LeopaCalendar.module.css';
 
 const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -50,7 +51,7 @@ const loadLogsFromDB = async (): Promise<DailyLog[]> => {
   });
 };
 
-// チェックボックス用フィールド
+// チェックボックス項目
 const checkboxFields: { key: keyof DailyLog; label: string }[] = [
   { key: 'waterChange', label: '水換え' },
   { key: 'cleaning', label: '掃除' },
@@ -61,9 +62,16 @@ const checkboxFields: { key: keyof DailyLog; label: string }[] = [
 const LeopaCalendar: React.FC = () => {
   const [logs, setLogs] = useState<DailyLog[]>(sampleLogs);
   const [selectedDate, setSelectedDate] = useState<DailyLog | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   useEffect(() => {
     loadLogsFromDB().then(setLogs).catch(console.error);
+  }, []);
+
+  // localStorageから背景画像をロード
+  useEffect(() => {
+    const savedImage = localStorage.getItem('leopaCalendarBg');
+    if (savedImage) setBackgroundImage(savedImage);
   }, []);
 
   const handleChange = (field: keyof DailyLog, value: string | boolean) => {
@@ -76,7 +84,26 @@ const LeopaCalendar: React.FC = () => {
     setSelectedDate({ ...selectedDate, [field]: value });
   };
 
-  // カレンダー作成（10月）
+  // 背景画像アップロード
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = reader.result as string;
+      setBackgroundImage(data);
+      localStorage.setItem('leopaCalendarBg', data);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // 背景画像削除
+  const handleRemoveImage = () => {
+    setBackgroundImage(null);
+    localStorage.removeItem('leopaCalendarBg');
+  };
+
+  // カレンダー作成
   const daysInMonth = 31;
   const calendarRows: (string | null)[][] = [];
   let week: (string | null)[] = Array(7).fill(null);
@@ -90,40 +117,77 @@ const LeopaCalendar: React.FC = () => {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-4">10月 レオパ管理カレンダー</h2>
+    <div className={styles.calendarContainer}>
+      <h2 className={styles.calendarTitle}>10月 レオパ飼育カレンダー</h2>
+      
+      {/* 背景設定 */}
+<div className="flex items-center gap-3 mb-4">
+  <label
+    htmlFor="bg-upload"
+    className="cursor-pointer px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-200"
+  >
+    カレンダー背景を設定
+  </label>
+  <input
+    id="bg-upload"
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={handleImageUpload}
+  />
+  {backgroundImage && (
+    <button
+      className="px-3 py-1 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 transition-colors duration-200"
+      onClick={handleRemoveImage}
+    >
+      削除
+    </button>
+  )}
+</div>
+  
 
-      <table className="w-full border-collapse border border-gray-300 text-center text-sm">
-        <thead>
-          <tr>
-            {DAYS.map(d => (
-              <th key={d} className="border border-gray-300 px-2 py-1">
-                {d}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {calendarRows.map((week, i) => (
-            <tr key={i}>
-              {week.map((date, j) => {
-                const log = logs.find(l => l.date === date);
-                return (
-                  <CalendarCell
-                    key={j}
-                    date={date}
-                    log={log}
-                    onClick={() => date && setSelectedDate(log || null)}
-                  />
-                );
-              })}
+
+      {/* 背景付きカレンダー */}
+      <div
+        className={styles.calendarBackground}
+        style={{
+          backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <table className={styles.calendarTable}>
+          <thead className={styles.calendarHeader}>
+            <tr>
+              {DAYS.map(d => (
+                <th key={d} className="border border-gray-300 px-2 py-1">
+                  {d}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {calendarRows.map((week, i) => (
+              <tr key={i}>
+                {week.map((date, j) => {
+                  const log = logs.find(l => l.date === date);
+                  return (
+                    <CalendarCell
+                      key={j}
+                      date={date}
+                      log={log}
+                      onClick={() => date && setSelectedDate(log || null)}
+                    />
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="mt-4">
-       <ExportZipButton logs={logs} />
+        <ExportZipButton logs={logs} />
       </div>
 
       {selectedDate && (

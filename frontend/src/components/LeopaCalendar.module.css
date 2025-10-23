@@ -1,0 +1,77 @@
+/* コンテナ：全体はシンプルに */
+.calendarContainer {
+  @apply p-4 rounded-2xl;
+}
+
+/* タイトル */
+.calendarTitle {
+  @apply text-3xl font-semibold text-gray-800 dark:text-gray-100 mb-6;
+  letter-spacing: 0.03em;
+  border-left: 4px solid #9acd32; /* アクセントライン */
+  padding-left: 0.5rem;
+}
+
+
+.leopaText {
+  @apply relative font-extrabold text-4xl;
+  background: linear-gradient(135deg, #6b8e23, #9acd32);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+/* 文字の上に薄く鱗パターンを重ねる */
+.leopaText::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 5px 5px;
+  pointer-events: none;
+}
+
+
+
+/* カレンダー表：ここで爬虫類の鱗っぽいデザインを表現 */
+.calendarTable {
+  @apply w-full border-collapse rounded-xl overflow-hidden shadow-lg;
+  border: 2px solid #4a6b2e;
+
+  /* 鱗っぽいパターン（小さめ・控えめ） */
+  background: linear-gradient(145deg, #3a4d1c, #2f3d16);
+  background-image: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+/* 曜日ヘッダ */
+.calendarHeader th {
+  @apply bg-green-600 text-yellow-100 px-4 py-2 font-semibold;
+  text-shadow: 0 1px 2px #000;
+}
+
+/* カレンダー本体のセル */
+.calendarBody td {
+  @apply border border-green-700 p-2 align-top transition-colors duration-300 cursor-pointer rounded-sm;
+  background: rgba(30, 45, 15, 0.8);
+  backdrop-filter: blur(3px);
+}
+
+.calendarBody td:hover {
+  background: linear-gradient(145deg, #4c6b2a, #3f5720);
+}
+
+/* 日付番号 */
+.dateNumber {
+  @apply font-bold text-white text-sm drop-shadow;
+}
+
+/* バッジ */
+.badge {
+  @apply inline-flex justify-center items-center text-white text-[10px] font-semibold rounded shadow-md;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+}
+
+/* エクスポートボタン */
+.exportButtonWrapper {
+  @apply mt-4 flex justify-end;
+}
