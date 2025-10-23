@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { DailyLog } from '../types';
 import { sampleLogs } from '../data';
-import ExportCSVButton from './ExportCSVButton';
+import ExportZipButton from './ExportZipButton.tsx';
 import LogModal from './LogModal';
 import CalendarCell from './CalendarCell';
 
@@ -123,7 +123,7 @@ const LeopaCalendar: React.FC = () => {
       </table>
 
       <div className="mt-4">
-        <ExportCSVButton logs={logs} />
+       <ExportZipButton logs={logs} />
       </div>
 
       {selectedDate && (

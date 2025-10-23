@@ -9,6 +9,7 @@ export interface DailyLog {
   poop: boolean;
   shed: boolean;
   notes: string;
+  photoBase64?: string; 
 }
 
 

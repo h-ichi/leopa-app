@@ -9,6 +9,16 @@ interface Props {
 }
 
 const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) => {
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      onChange('photoBase64', reader.result as string); // Base64形式で保存
+    };
+    reader.readAsDataURL(file);
+  };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white p-4 rounded w-full max-w-sm">
@@ -62,6 +72,23 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
               className="w-full border px-2 py-1 rounded"
             />
           </div>
+        </div>
+        {/* 写真アップロード */}
+        <div className="mt-4">
+          <label className="block mb-1 font-medium text-gray-700">写真アップロード</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="text-sm"
+          />
+          {log.photoBase64 && (
+            <img
+              src={log.photoBase64}
+              alt="uploaded"
+              className="mt-3 w-full h-40 object-cover rounded border"
+            />
+          )}
         </div>
 
         <button
