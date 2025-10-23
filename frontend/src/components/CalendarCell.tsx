@@ -43,8 +43,12 @@ const CalendarCell: React.FC<Props> = ({ log, date, onClick }) => {
             {displayItems.map((item, idx) => (
               <span
                 key={idx}
-                className="inline-flex justify-center items-center text-white text-[12px] font-medium rounded"
-                style={{ backgroundColor: item.color, width: '2.2em', height: '2.2em' }}
+                className="
+                  inline-flex justify-center items-center text-white font-medium rounded
+                  text-[10px] sm:text-[12px] md:text-[14px]
+                  w-[1.6em] h-[1.6em] sm:w-[2em] sm:h-[2em] md:w-[2.4em] md:h-[2.4em]
+                "
+                style={{ backgroundColor: item.color }}
               >
                 {item.label[0]}
               </span>
