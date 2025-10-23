@@ -25,7 +25,7 @@ const CalendarCell: React.FC<Props> = ({ log, date, onClick }) => {
     if (log.cleaning) items.push({ label: '掃除', color: colorMap['掃除'] });
     if (log.poop) items.push({ label: '排便', color: colorMap['排便'] });
     if (log.shed) items.push({ label: '脱皮', color: colorMap['脱皮'] });
-    if (log.notes) items.push({ label: 'メモ', color: colorMap['メモ'] });
+    if (log.notes) items.push({ label: '', color: colorMap['メモ'] });
     return items;
   };
 

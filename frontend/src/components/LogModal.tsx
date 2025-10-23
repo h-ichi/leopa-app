@@ -54,7 +54,7 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
           ))}
 
           <div>
-            <label>備考: </label>
+            <label>メモ: </label>
             <input
               type="text"
               value={log.notes}
