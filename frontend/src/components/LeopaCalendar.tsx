@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { DailyLog } from '../types';
 import { sampleLogs } from '../data';
 import ExportZipButton from './ExportZipButton.tsx';
@@ -12,7 +12,6 @@ const DB_NAME = 'LeopaCalendarDB';
 const STORE_NAME = 'logs';
 const DB_VERSION = 1;
 
-// IndexedDBを開く
 const openDB = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -26,7 +25,6 @@ const openDB = (): Promise<IDBDatabase> =>
     request.onerror = () => reject(request.error);
   });
 
-// 保存
 const saveLogsToDB = async (logs: DailyLog[]): Promise<void> => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -38,7 +36,6 @@ const saveLogsToDB = async (logs: DailyLog[]): Promise<void> => {
   });
 };
 
-// 読み込み
 const loadLogsFromDB = async (): Promise<DailyLog[]> => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -51,7 +48,6 @@ const loadLogsFromDB = async (): Promise<DailyLog[]> => {
   });
 };
 
-// チェックボックス項目
 const checkboxFields: { key: keyof DailyLog; label: string }[] = [
   { key: 'waterChange', label: '水換え' },
   { key: 'cleaning', label: '掃除' },
@@ -63,19 +59,17 @@ const LeopaCalendar: React.FC = () => {
   const [logs, setLogs] = useState<DailyLog[]>(sampleLogs);
   const [selectedDate, setSelectedDate] = useState<DailyLog | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
-  // ログ読み込み
   useEffect(() => {
     loadLogsFromDB().then(setLogs).catch(console.error);
   }, []);
 
-  // 背景画像を localStorage からロード
   useEffect(() => {
     const savedImage = localStorage.getItem('leopaCalendarBg');
     if (savedImage) setBackgroundImage(savedImage);
   }, []);
 
-  // ログ更新
   const handleChange = (field: keyof DailyLog, value: string | boolean) => {
     if (!selectedDate) return;
     const newLogs = logs.map(log =>
@@ -86,7 +80,6 @@ const LeopaCalendar: React.FC = () => {
     setSelectedDate(prev => (prev ? { ...prev, [field]: value } : null));
   };
 
-  // 背景画像アップロード
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -99,7 +92,6 @@ const LeopaCalendar: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  // 背景画像削除
   const handleRemoveImage = () => {
     setBackgroundImage(null);
     localStorage.removeItem('leopaCalendarBg');
@@ -119,14 +111,17 @@ const LeopaCalendar: React.FC = () => {
   }
 
   return (
-    <div className={styles.calendarContainer}>
-      <h2 className={styles.calendarTitle}>10月 レオパ飼育カレンダー</h2>
+    <div className="flex flex-col items-center p-4">
+      {/* タイトル */}
+      <h2 className={`${styles.calendarTitle} text-2xl sm:text-3xl mb-4`}>
+        10月 レオパ飼育カレンダー
+      </h2>
 
       {/* 背景設定 */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4 w-full max-w-4xl">
         <label
           htmlFor="bg-upload"
-          className="cursor-pointer px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-200"
+          className="cursor-pointer px-3 sm:px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-200 text-sm sm:text-base"
         >
           カレンダー背景を設定
         </label>
@@ -139,7 +134,7 @@ const LeopaCalendar: React.FC = () => {
         />
         {backgroundImage && (
           <button
-            className="px-3 py-1 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 transition-colors duration-200"
+            className="px-2 sm:px-3 py-1 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 transition-colors duration-200 text-sm sm:text-base"
             onClick={handleRemoveImage}
           >
             削除
@@ -147,21 +142,29 @@ const LeopaCalendar: React.FC = () => {
         )}
       </div>
 
-      {/* 背景付きカレンダー */}
+      {/* カレンダー */}
       <div
-        className={styles.calendarBackground}
-        style={{
-          backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
+        ref={calendarRef}
+        className="relative w-full max-w-4xl mb-4"
+        style={{ aspectRatio: '7 / 5' }}
       >
-        <table className={styles.calendarTable}>
+        {backgroundImage && (
+          <img
+            src={backgroundImage}
+            alt="calendar-bg"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none rounded-xl"
+          />
+        )}
+        <table
+          className={`${styles.calendarTable} relative z-10 w-full h-full table-fixed text-[10px] sm:text-sm md:text-base`}
+        >
           <thead className={styles.calendarHeader}>
             <tr>
               {DAYS.map(d => (
-                <th key={d} className="border border-gray-300 px-2 py-1">
+                <th
+                  key={d}
+                  className="border border-gray-300 px-1 sm:px-2 py-1"
+                >
                   {d}
                 </th>
               ))}
@@ -187,7 +190,8 @@ const LeopaCalendar: React.FC = () => {
         </table>
       </div>
 
-      <div className="mt-4">
+      {/* ZIPボタン */}
+      <div className="w-full max-w-4xl flex justify-start">
         <ExportZipButton logs={logs} />
       </div>
 
