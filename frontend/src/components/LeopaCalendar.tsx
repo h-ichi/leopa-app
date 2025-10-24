@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { DailyLog } from '../types';
-import { sampleLogs } from '../data';
-import ExportZipButton from './ExportZipButton.tsx';
+import ExportZipButton from './ExportZipButton';
 import LogModal from './LogModal';
 import CalendarCell from './CalendarCell';
 import styles from './LeopaCalendar.module.css';
@@ -42,8 +41,7 @@ const loadLogsFromDB = async (): Promise<DailyLog[]> => {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
     const request = store.getAll();
-    request.onsuccess = () =>
-      resolve(request.result.length ? request.result : sampleLogs);
+    request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
 };
@@ -55,17 +53,23 @@ const checkboxFields: { key: keyof DailyLog; label: string }[] = [
   { key: 'shed', label: '脱皮' },
 ];
 
+const getDaysInMonth = (year: number, month: number) =>
+  new Date(year, month, 0).getDate();
+
 const LeopaCalendar: React.FC = () => {
-  const [logs, setLogs] = useState<DailyLog[]>(sampleLogs);
+  const [logs, setLogs] = useState<DailyLog[]>([]);
   const [selectedDate, setSelectedDate] = useState<DailyLog | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+
+  const now = new Date();
+  const [currentMonth, setCurrentMonth] = useState(
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  );
   const calendarRef = useRef<HTMLDivElement>(null);
 
+  // 月変更時にDB読み込み
   useEffect(() => {
     loadLogsFromDB().then(setLogs).catch(console.error);
-  }, []);
-
-  useEffect(() => {
     const savedImage = localStorage.getItem('leopaCalendarBg');
     if (savedImage) setBackgroundImage(savedImage);
   }, []);
@@ -97,13 +101,31 @@ const LeopaCalendar: React.FC = () => {
     localStorage.removeItem('leopaCalendarBg');
   };
 
-  // カレンダー作成
-  const daysInMonth = 31;
+  // 前月・次月切替
+  const handlePrevMonth = () => {
+    const [year, month] = currentMonth.split('-').map(Number);
+    const newDate = new Date(year, month - 2);
+    setCurrentMonth(
+      `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}`
+    );
+  };
+  const handleNextMonth = () => {
+    const [year, month] = currentMonth.split('-').map(Number);
+    const newDate = new Date(year, month);
+    setCurrentMonth(
+      `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}`
+    );
+  };
+
+  const [year, month] = currentMonth.split('-').map(Number);
+  const daysInMonth = getDaysInMonth(year, month);
+
+  // カレンダー生成
   const calendarRows: (string | null)[][] = [];
   let week: (string | null)[] = Array(7).fill(null);
   for (let day = 1; day <= daysInMonth; day++) {
-    const weekday = new Date(2025, 9, day).getDay();
-    week[weekday] = `2025-10-${String(day).padStart(2, '0')}`;
+    const weekday = new Date(year, month - 1, day).getDay();
+    week[weekday] = `${currentMonth}-${String(day).padStart(2, '0')}`;
     if (weekday === 6 || day === daysInMonth) {
       calendarRows.push(week);
       week = Array(7).fill(null);
@@ -112,10 +134,24 @@ const LeopaCalendar: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center p-4">
-      {/* タイトル */}
       <h2 className={`${styles.calendarTitle} text-2xl sm:text-3xl mb-4`}>
         10月 レオパ飼育カレンダー
       </h2>
+      {/* 月切替ボタン */}
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={handlePrevMonth}
+          className="px-3 py-1 bg-gray-300 rounded"
+        >
+          ＜ 前月
+        </button>
+        <button
+          onClick={handleNextMonth}
+          className="px-3 py-1 bg-gray-300 rounded"
+        >
+          次月 ＞
+        </button>
+      </div>
 
       {/* 背景設定 */}
       <div className="flex flex-wrap items-center gap-2 mb-4 w-full max-w-4xl">
@@ -161,10 +197,7 @@ const LeopaCalendar: React.FC = () => {
           <thead className={styles.calendarHeader}>
             <tr>
               {DAYS.map(d => (
-                <th
-                  key={d}
-                  className="border border-gray-300 px-1 sm:px-2 py-1"
-                >
+                <th key={d} className="border border-gray-300 px-1 sm:px-2 py-1">
                   {d}
                 </th>
               ))}
@@ -174,13 +207,38 @@ const LeopaCalendar: React.FC = () => {
             {calendarRows.map((week, i) => (
               <tr key={i}>
                 {week.map((date, j) => {
-                  const log = logs.find(l => l.date === date);
+                  let log: DailyLog | undefined;
+                  if (date) {
+                    log = logs.find(l => l.date === date);
+                    if (!log) {
+                      log = {
+                        date,
+                        dayOfWeek: DAYS[new Date(date).getDay()],
+                        temp: '',
+                        humidity: '',
+                        feeding: '',
+                        waterChange: false,
+                        cleaning: false,
+                        poop: false,
+                        shed: false,
+                        notes: '',
+                      };
+                    }
+                  }
                   return (
                     <CalendarCell
                       key={j}
                       date={date}
                       log={log}
-                      onClick={() => date && setSelectedDate(log || null)}
+                      onClick={() => {
+                        if (!date || !log) return;
+                        setSelectedDate(log);
+                        if (!logs.some(l => l.date === date)) {
+                          const newLogs = [...logs, log];
+                          setLogs(newLogs);
+                          saveLogsToDB(newLogs).catch(console.error);
+                        }
+                      }}
                     />
                   );
                 })}
@@ -190,7 +248,7 @@ const LeopaCalendar: React.FC = () => {
         </table>
       </div>
 
-      {/* ZIPボタン */}
+      {/* ZIP出力 */}
       <div className="w-full max-w-4xl flex justify-start">
         <ExportZipButton logs={logs} />
       </div>

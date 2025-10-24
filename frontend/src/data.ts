@@ -4,8 +4,8 @@ const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
 export const sampleLogs: DailyLog[] = [
   {
-    date: '2025-10-01',
-    dayOfWeek: '水',
+    date: '',
+    dayOfWeek: '',
     temp: '28',
     humidity: '60',
     feeding: 'レッドローチ3匹',
