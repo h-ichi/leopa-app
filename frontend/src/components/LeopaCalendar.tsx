@@ -135,7 +135,7 @@ const LeopaCalendar: React.FC = () => {
   return (
     <div className="flex flex-col items-center p-4">
       <h2 className={`${styles.calendarTitle} text-2xl sm:text-3xl mb-4`}>
-        10月 レオパ飼育カレンダー
+        {year}年{month}月 レオパ飼育カレンダー
       </h2>
       {/* 月切替ボタン */}
       <div className="flex items-center gap-2 mb-3">
