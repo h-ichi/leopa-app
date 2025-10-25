@@ -50,11 +50,12 @@ const ExportZipButton: React.FC<Props> = ({ logs }) => {
 
   return (
     <button
-      onClick={handleExport}
-      className="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
-    >
-      ZIP出力
-    </button>
+  onClick={handleExport}
+  className="mt-4 px-4 py-2 bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-semibold rounded-lg shadow hover:from-indigo-500 hover:to-indigo-700 transition-all duration-200"
+>
+  ZIP出力
+</button>
+
   );
 };
 

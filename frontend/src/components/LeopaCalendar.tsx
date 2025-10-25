@@ -3,7 +3,6 @@ import type { DailyLog } from '../types';
 import ExportZipButton from './ExportZipButton';
 import LogModal from './LogModal';
 import CalendarCell from './CalendarCell';
-import styles from './LeopaCalendar.module.css';
 
 const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -67,7 +66,6 @@ const LeopaCalendar: React.FC = () => {
   );
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  // 月変更時にDB読み込み
   useEffect(() => {
     loadLogsFromDB().then(setLogs).catch(console.error);
     const savedImage = localStorage.getItem('leopaCalendarBg');
@@ -101,7 +99,6 @@ const LeopaCalendar: React.FC = () => {
     localStorage.removeItem('leopaCalendarBg');
   };
 
-  // 前月・次月切替
   const handlePrevMonth = () => {
     const [year, month] = currentMonth.split('-').map(Number);
     const newDate = new Date(year, month - 2);
@@ -120,7 +117,6 @@ const LeopaCalendar: React.FC = () => {
   const [year, month] = currentMonth.split('-').map(Number);
   const daysInMonth = getDaysInMonth(year, month);
 
-  // カレンダー生成
   const calendarRows: (string | null)[][] = [];
   let week: (string | null)[] = Array(7).fill(null);
   for (let day = 1; day <= daysInMonth; day++) {
@@ -133,71 +129,77 @@ const LeopaCalendar: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <h2 className={`${styles.calendarTitle} text-2xl sm:text-3xl mb-4`}>
-        {year}年{month}月 レオパ飼育カレンダー
+    <div className="flex flex-col items-center p-4 bg-gradient-to-b from-yellow-50 via-white to-green-50 min-h-screen">
+      <h2 className="text-3xl sm:text-4xl font-extrabold text-center mb-4 leading-snug text-gray-800 drop-shadow-md">
+        {year}年{month}月
+        <br />
+        <span className="text-lg sm:text-xl text-gray-600 font-normal">
+          レオパードゲッコー飼育カレンダー
+        </span>
       </h2>
-      {/* 月切替ボタン */}
+
       <div className="flex items-center gap-2 mb-3">
         <button
           onClick={handlePrevMonth}
-          className="px-3 py-1 bg-gray-300 rounded"
+          className="px-5 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-full shadow-lg hover:from-green-500 hover:to-green-700 hover:scale-105 transition-all duration-200"
         >
           ＜ 前月
         </button>
         <button
           onClick={handleNextMonth}
-          className="px-3 py-1 bg-gray-300 rounded"
+          className="px-5 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-full shadow-lg hover:from-green-500 hover:to-green-700 hover:scale-105 transition-all duration-200"
         >
           次月 ＞
         </button>
       </div>
 
-      {/* 背景設定 */}
-      <div className="flex flex-wrap items-center gap-2 mb-4 w-full max-w-4xl">
-        <label
-          htmlFor="bg-upload"
-          className="cursor-pointer px-3 sm:px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-200 text-sm sm:text-base"
-        >
-          カレンダー背景を設定
-        </label>
-        <input
-          id="bg-upload"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImageUpload}
-        />
-        {backgroundImage && (
-          <button
-            className="px-2 sm:px-3 py-1 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 transition-colors duration-200 text-sm sm:text-base"
-            onClick={handleRemoveImage}
-          >
-            削除
-          </button>
-        )}
-      </div>
+      <div className="flex flex-wrap items-center gap-2 mb-4 w-full max-w-5xl">
+  <label
+    htmlFor="bg-upload"
+    className="cursor-pointer px-4 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold rounded-lg shadow hover:from-green-500 hover:to-green-700 transition-all duration-200 text-sm sm:text-base"
+  >
+    カレンダー背景を設定
+  </label>
+  <input
+    id="bg-upload"
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={handleImageUpload}
+  />
+  {backgroundImage && (
+    <button
+      className="px-4 py-2 bg-gradient-to-r from-red-400 to-red-600 text-white rounded-lg shadow hover:from-red-500 hover:to-red-700 transition-all duration-200 text-sm sm:text-base"
+      onClick={handleRemoveImage}
+    >
+      削除
+    </button>
+  )}
+</div>
 
-      {/* カレンダー */}
+
       <div
         ref={calendarRef}
-        className="relative w-full max-w-4xl mb-4"
+        className="relative w-full max-w-5xl mb-4"
         style={{ aspectRatio: '7 / 5' }}
       >
         {backgroundImage && (
           <img
             src={backgroundImage}
             alt="calendar-bg"
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none rounded-xl"
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none rounded-xl filter brightness-90"
           />
         )}
-        <table
-          className={`${styles.calendarTable} relative z-10 w-full h-full table-fixed text-[10px] sm:text-sm md:text-base`}
-        >
-          <thead className={styles.calendarHeader}>
+        <div className="absolute inset-0 bg-white/70 z-0 backdrop-blur-sm rounded-xl"></div>
+
+        <table className="relative z-10 w-full h-full table-fixed text-[10px] sm:text-sm md:text-base border-collapse">
+          <thead>
             <tr>
               {DAYS.map(d => (
-                <th key={d} className="border border-gray-300 px-1 sm:px-2 py-1">
+                <th
+                  key={d}
+                  className="border border-gray-300 px-1 sm:px-2 py-1 bg-green-100 text-green-800 font-semibold"
+                >
                   {d}
                 </th>
               ))}
@@ -248,8 +250,7 @@ const LeopaCalendar: React.FC = () => {
         </table>
       </div>
 
-      {/* ZIP出力 */}
-      <div className="w-full max-w-4xl flex justify-start">
+      <div className="w-full max-w-5xl flex justify-start">
         <ExportZipButton logs={logs} />
       </div>
 
