@@ -20,12 +20,19 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
     reader.readAsDataURL(file);
   };
 
+  const handlePhotoDelete = () => {
+    if (window.confirm('この写真を削除しますか？')) {
+      onChange('photoBase64', '');
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white p-4 rounded-xl w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-lg">
         <h3 className="text-lg font-semibold mb-3 text-gray-800">{log.date} の記録</h3>
 
         <div className="space-y-3">
+          {/* 気温 */}
           <div>
             <label className="block mb-1 text-gray-600">気温(℃)</label>
             <input
@@ -36,6 +43,7 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
             />
           </div>
 
+          {/* 湿度 */}
           <div>
             <label className="block mb-1 text-gray-600">湿度(%)</label>
             <input
@@ -46,6 +54,7 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
             />
           </div>
 
+          {/* 給餌 */}
           <div>
             <label className="block mb-1 text-gray-600">給餌</label>
             <input
@@ -56,6 +65,7 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
             />
           </div>
 
+          {/* チェック項目 */}
           {checkboxFields.map(field => (
             <div key={field.key} className="flex items-center space-x-2">
               <input
@@ -68,6 +78,7 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
             </div>
           ))}
 
+          {/* メモ */}
           <div>
             <label className="block mb-1 text-gray-600">メモ</label>
             <input
@@ -78,16 +89,25 @@ const LogModal: React.FC<Props> = ({ log, checkboxFields, onChange, onClose }) =
             />
           </div>
 
-          {/* 写真アップロード */}
+          {/* 写真アップロード／削除 */}
           <div>
             <label className="block mb-1 font-medium text-gray-700">写真アップロード</label>
             <input type="file" accept="image/*" onChange={handlePhotoUpload} className="text-sm" />
+
             {log.photoBase64 && (
-              <img
-                src={log.photoBase64}
-                alt="uploaded"
-                className="mt-2 w-full h-40 object-cover rounded border"
-              />
+              <div className="mt-2">
+                <img
+                  src={log.photoBase64}
+                  alt="uploaded"
+                  className="w-full h-40 object-cover rounded border"
+                />
+                <button
+                  onClick={handlePhotoDelete}
+                  className="mt-2 w-full px-3 py-2 bg-gradient-to-r from-rose-400 to-rose-600 text-white rounded hover:from-rose-500 hover:to-rose-700 transition-colors"
+                >
+                  写真を削除
+                </button>
+              </div>
             )}
           </div>
         </div>
