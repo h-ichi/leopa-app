@@ -251,7 +251,13 @@ const LeopaCalendar: React.FC = () => {
       </div>
 
       <div className="w-full max-w-5xl flex justify-start">
-        <ExportZipButton logs={logs} />
+      <ExportZipButton
+  logs={logs}
+  onImport={(newLogs) => {
+    setLogs(newLogs);
+    saveLogsToDB(newLogs).catch(console.error);
+  }}
+/>
       </div>
 
       {selectedDate && (
