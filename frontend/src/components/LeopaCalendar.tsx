@@ -134,7 +134,7 @@ const LeopaCalendar: React.FC = () => {
         {year}年{month}月
         <br />
         <span className="text-lg sm:text-xl text-gray-600 font-normal">
-          レオパードゲッコー飼育カレンダー
+          Leopa Log
         </span>
       </h2>
 
