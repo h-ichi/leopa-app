@@ -1,7 +1,7 @@
 # Leopa Log
 
-レオパードゲッコー（ヒョウモントカゲモドキ）の  
-日々の飼育状況を、確認・記録するための個人用アプリです。
+レオパードゲッコーの飼育ログを管理するための  
+カレンダー型ログ管理アプリです。
 
 飼育を「管理」したり「評価」したりするのではなく、  
 今日も問題なく過ごせているかを自分で把握することを目的にしています。
@@ -27,6 +27,14 @@
   - 気づいたことのメモ
 - カレンダー形式での履歴確認
 - 過去の記録を振り返るための一覧表示
+
+技術要素
+- 日付ごとの飼育ログ管理
+- IndexedDB を利用したローカルデータ保存
+- ログの ZIP エクスポート機能
+- モーダルによる編集 UI
+- フロントエンドのみで完結
+
 
 ※ 通知・SNS共有・スコア化などの機能はありません。
 
@@ -58,7 +66,8 @@
 
 - React
 - TypeScript
-- （必要に応じて追記）
+- IndexedDB
+- CSS Modules
 
 
 ---
@@ -83,3 +92,22 @@
 - 個人利用中
 - 日常的に使用・改善を継続中
 
+## ディレクトリ構成
+leopa-app/
+└─ frontend/
+   ├─ index.html         # Vite エントリーポイント
+   └─ src/
+      ├─ assets          # 画像・静的ファイル
+      ├─ components      # UIコンポーネント
+      │  ├─ CalenderCell.tsx
+      │  ├─ ExportZipButton.tsx
+      │  ├─ LeopaCalendar.module.css
+      │  ├─ LeopaCalendar.tsx
+      │  └─ LogModal.tsx
+      ├─ units           # データ操作・ロジック
+      │  └─ indexedDB.ts
+      ├─ App.tsx         # ルートコンポーネント
+      ├─ data.ts         # 定数・初期データ
+      ├─ index.css       # グローバルCSS
+      ├─ main.tsx        # React エントリーポイント
+      └─ types.ts        # 型定義
