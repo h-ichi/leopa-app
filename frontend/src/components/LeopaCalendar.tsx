@@ -3,47 +3,12 @@ import type { DailyLog } from '../types';
 import ExportZipButton from './ExportZipButton';
 import LogModal from './LogModal';
 import CalendarCell from './CalendarCell';
+import {
+  getAllLogs,
+  saveAllLogs,
+} from '../units/indexedDB';
 
 const DAYS = ['日', '月', '火', '水', '木', '金', '土'];
-
-const DB_NAME = 'LeopaCalendarDB';
-const STORE_NAME = 'logs';
-const DB_VERSION = 1;
-
-const openDB = (): Promise<IDBDatabase> =>
-  new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'date' });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-
-const saveLogsToDB = async (logs: DailyLog[]): Promise<void> => {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    logs.forEach(log => store.put(log));
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-};
-
-const loadLogsFromDB = async (): Promise<DailyLog[]> => {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-};
 
 const checkboxFields: { key: keyof DailyLog; label: string }[] = [
   { key: 'waterChange', label: '水換え' },
@@ -67,20 +32,28 @@ const LeopaCalendar: React.FC = () => {
   const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadLogsFromDB().then(setLogs).catch(console.error);
-    const savedImage = localStorage.getItem('leopaCalendarBg');
-    if (savedImage) setBackgroundImage(savedImage);
+    getAllLogs()
+      .then(setLogs)
+      .catch(console.error);
   }, []);
+  
 
   const handleChange = (field: keyof DailyLog, value: string | boolean) => {
     if (!selectedDate) return;
+  
     const newLogs = logs.map(log =>
-      log.date === selectedDate.date ? { ...log, [field]: value } : log
+      log.date === selectedDate.date
+        ? { ...log, [field]: value }
+        : log
     );
+  
     setLogs(newLogs);
-    saveLogsToDB(newLogs).catch(console.error);
-    setSelectedDate(prev => (prev ? { ...prev, [field]: value } : null));
+    saveAllLogs(newLogs);
+    setSelectedDate(prev =>
+      prev ? { ...prev, [field]: value } : null
+    );
   };
+  
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -234,13 +207,16 @@ const LeopaCalendar: React.FC = () => {
                       log={log}
                       onClick={() => {
                         if (!date || !log) return;
+                      
                         setSelectedDate(log);
+                      
                         if (!logs.some(l => l.date === date)) {
                           const newLogs = [...logs, log];
                           setLogs(newLogs);
-                          saveLogsToDB(newLogs).catch(console.error);
+                          saveAllLogs(newLogs);
                         }
                       }}
+                      
                     />
                   );
                 })}
@@ -255,9 +231,10 @@ const LeopaCalendar: React.FC = () => {
   logs={logs}
   onImport={(newLogs) => {
     setLogs(newLogs);
-    saveLogsToDB(newLogs).catch(console.error);
+    saveAllLogs(newLogs);
   }}
 />
+
       </div>
 
       {selectedDate && (
