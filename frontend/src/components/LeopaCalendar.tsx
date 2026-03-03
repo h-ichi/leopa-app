@@ -102,87 +102,113 @@ const LeopaCalendar: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center p-4 bg-gradient-to-b from-yellow-50 via-white to-green-50 min-h-screen">
-      <h2 className="text-3xl sm:text-4xl font-extrabold text-center mb-4 leading-snug text-gray-800 drop-shadow-md">
-        {year}年{month}月
-        <br />
-        <span className="text-lg sm:text-xl text-gray-600 font-normal">
-          レオパードゲッコー飼育カレンダー
-        </span>
-      </h2>
-
-      <div className="flex items-center gap-2 mb-3">
-        <button
-          onClick={handlePrevMonth}
-          className="px-5 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-full shadow-lg hover:from-green-500 hover:to-green-700 hover:scale-105 transition-all duration-200"
-        >
-          ＜ 前月
-        </button>
-        <button
-          onClick={handleNextMonth}
-          className="px-5 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-full shadow-lg hover:from-green-500 hover:to-green-700 hover:scale-105 transition-all duration-200"
-        >
-          次月 ＞
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-10 px-4 flex flex-col items-center">
+  
+      {/* ================= HEADER CARD ================= */}
+      <div className="w-full max-w-5xl mb-6 rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl p-6">
+  
+        <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-6 tracking-tight">
+          {year}年{month}月
+          <span className="block text-sm text-gray-500 font-normal mt-1">
+            レオパードゲッコー飼育カレンダー
+          </span>
+        </h2>
+  
+        <div className="flex flex-wrap justify-between items-center gap-3">
+  
+          {/* 月移動 */}
+          <div className="flex gap-3">
+            <button
+              onClick={handlePrevMonth}
+              className="px-5 py-2 rounded-full bg-emerald-500 text-white shadow hover:shadow-lg hover:scale-105 transition"
+            >
+              ← 前月
+            </button>
+  
+            <button
+              onClick={handleNextMonth}
+              className="px-5 py-2 rounded-full bg-emerald-500 text-white shadow hover:shadow-lg hover:scale-105 transition"
+            >
+              次月 →
+            </button>
+          </div>
+  
+          {/* 背景ボタン */}
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="bg-upload"
+              className="cursor-pointer px-4 py-2 rounded-lg bg-gray-800 text-white text-sm shadow hover:bg-gray-700 transition"
+            >
+              背景変更
+            </label>
+  
+            <input
+              id="bg-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+  
+            {backgroundImage && (
+              <button
+                onClick={handleRemoveImage}
+                className="px-3 py-2 rounded-lg bg-red-500 text-white text-sm shadow hover:bg-red-600 transition"
+              >
+                削除
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-
-      <div className="flex flex-wrap items-center gap-2 mb-4 w-full max-w-5xl">
-  <label
-    htmlFor="bg-upload"
-    className="cursor-pointer px-4 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold rounded-lg shadow hover:from-green-500 hover:to-green-700 transition-all duration-200 text-sm sm:text-base"
-  >
-    カレンダー背景を設定
-  </label>
-  <input
-    id="bg-upload"
-    type="file"
-    accept="image/*"
-    className="hidden"
-    onChange={handleImageUpload}
-  />
-  {backgroundImage && (
-    <button
-      className="px-4 py-2 bg-gradient-to-r from-red-400 to-red-600 text-white rounded-lg shadow hover:from-red-500 hover:to-red-700 transition-all duration-200 text-sm sm:text-base"
-      onClick={handleRemoveImage}
-    >
-      削除
-    </button>
-  )}
-</div>
-
-
+  
+  
+      {/* ================= CALENDAR CARD ================= */}
       <div
-        ref={calendarRef}
-        className="relative w-full max-w-5xl mb-4"
-        style={{ aspectRatio: '7 / 5' }}
-      >
+  ref={calendarRef}
+  className="
+    relative
+    w-full
+    max-w-5xl
+    rounded-3xl
+    shadow-2xl
+    bg-white/80
+    backdrop-blur-xl
+
+    min-h-[520px]     /* ← 最低高さ保証 */
+    overflow-auto     /* ← スクロール可能 */
+  "
+>
         {backgroundImage && (
           <img
             src={backgroundImage}
             alt="calendar-bg"
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none rounded-xl filter brightness-90"
+            className="absolute inset-0 w-full h-full object-cover opacity-70"
           />
         )}
-        <div className="absolute inset-0 bg-white/70 z-0 backdrop-blur-sm rounded-xl"></div>
-
-        <table className="relative z-10 w-full h-full table-fixed text-[10px] sm:text-sm md:text-base border-collapse">
+  
+        <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
+  
+        <table className="relative z-10 w-full h-full table-fixed text-xs sm:text-sm border-separate border-spacing-1 p-2">
           <thead>
             <tr>
               {DAYS.map(d => (
                 <th
                   key={d}
-                  className="border border-gray-300 px-1 sm:px-2 py-1 bg-green-100 text-green-800 font-semibold"
+                  className="rounded-lg bg-emerald-100 text-emerald-800 font-semibold py-2"
                 >
                   {d}
                 </th>
               ))}
             </tr>
           </thead>
+  
           <tbody>
             {calendarRows.map((week, i) => (
               <tr key={i}>
                 {week.map((date, j) => {
                   let log: DailyLog | undefined;
+  
                   if (date) {
                     log = logs.find(l => l.date === date);
                     if (!log) {
@@ -200,6 +226,7 @@ const LeopaCalendar: React.FC = () => {
                       };
                     }
                   }
+  
                   return (
                     <CalendarCell
                       key={j}
@@ -207,16 +234,15 @@ const LeopaCalendar: React.FC = () => {
                       log={log}
                       onClick={() => {
                         if (!date || !log) return;
-                      
+  
                         setSelectedDate(log);
-                      
+  
                         if (!logs.some(l => l.date === date)) {
                           const newLogs = [...logs, log];
                           setLogs(newLogs);
                           saveAllLogs(newLogs);
                         }
                       }}
-                      
                     />
                   );
                 })}
