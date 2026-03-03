@@ -107,19 +107,40 @@ const ExportZipButton: React.FC<Props> = ({ logs, onImport }) => {
     <div className="flex flex-wrap gap-3 mt-4">
       {/* ZIP出力 */}
       <button
-        onClick={handleExport}
-        className="px-4 py-2 bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-semibold rounded-lg shadow hover:from-indigo-500 hover:to-indigo-700 transition-all duration-200"
-      >
-        ZIP出力
-      </button>
+  onClick={handleExport}
+  className="
+    px-4 py-2
+    bg-indigo-500
+    text-white
+    font-medium
+    rounded-lg
+    shadow-sm
+    hover:bg-indigo-600
+    active:scale-95
+    transition
+  "
+>
+  ZIP出力
+</button>
 
       {/* ZIP読み込み */}
       <label
-        htmlFor="import-zip"
-        className="cursor-pointer px-4 py-2 bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold rounded-lg shadow hover:from-green-500 hover:to-green-700 transition-all duration-200"
-      >
-        ZIPを読み込む
-      </label>
+  htmlFor="import-zip"
+  className="
+    cursor-pointer
+    px-4 py-2
+    bg-emerald-500
+    text-white
+    font-medium
+    rounded-lg
+    shadow-sm
+    hover:bg-emerald-600
+    active:scale-95
+    transition
+  "
+>
+  ZIPを読み込む
+</label>
       <input
         id="import-zip"
         type="file"

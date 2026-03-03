@@ -102,7 +102,7 @@ const LeopaCalendar: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-yellow-50 py-10 px-4 flex flex-col items-center">
+    <div className="min-h-screen bg-gray-100 py-10 px-4 flex flex-col items-center">
   
       {/* ================= HEADER CARD ================= */}
       <div className="w-full max-w-5xl mb-6 rounded-3xl bg-white/80 backdrop-blur-xl shadow-xl p-6">
@@ -164,93 +164,108 @@ const LeopaCalendar: React.FC = () => {
   
   
       {/* ================= CALENDAR CARD ================= */}
-      <div
+<div
   ref={calendarRef}
   className="
     relative
     w-full
     max-w-5xl
-    rounded-3xl
+    rounded-3xl      /* ← 外枠だけ丸み */
+    overflow-hidden
     shadow-2xl
     bg-white/80
     backdrop-blur-xl
-
-    min-h-[520px]     /* ← 最低高さ保証 */
-    overflow-auto     /* ← スクロール可能 */
+    min-h-[520px]
+    overflow-auto /* ← スクロール可能 */
   "
 >
-        {backgroundImage && (
-          <img
-            src={backgroundImage}
-            alt="calendar-bg"
-            className="absolute inset-0 w-full h-full object-cover opacity-70"
-          />
-        )}
-  
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
-  
-        <table className="relative z-10 w-full h-full table-fixed text-xs sm:text-sm border-separate border-spacing-1 p-2">
-          <thead>
-            <tr>
-              {DAYS.map(d => (
-                <th
-                  key={d}
-                  className="rounded-lg bg-emerald-100 text-emerald-800 font-semibold py-2"
-                >
-                  {d}
-                </th>
-              ))}
-            </tr>
-          </thead>
-  
-          <tbody>
-            {calendarRows.map((week, i) => (
-              <tr key={i}>
-                {week.map((date, j) => {
-                  let log: DailyLog | undefined;
-  
-                  if (date) {
-                    log = logs.find(l => l.date === date);
-                    if (!log) {
-                      log = {
-                        date,
-                        dayOfWeek: DAYS[new Date(date).getDay()],
-                        temp: '',
-                        humidity: '',
-                        feeding: '',
-                        waterChange: false,
-                        cleaning: false,
-                        poop: false,
-                        shed: false,
-                        notes: '',
-                      };
-                    }
+  {backgroundImage && (
+    <img
+      src={backgroundImage}
+      alt="calendar-bg"
+      className="absolute inset-0 w-full h-full object-cover opacity-60"
+    />
+  )}
+
+  <div className="absolute inset-0 bg-white/70 backdrop-blur-sm" />
+
+  {/* ★ テーブルを完全フラット化 */}
+  <table
+    className="
+      relative z-10
+      w-full h-full
+      table-fixed
+      text-xs sm:text-sm
+      border-collapse   /* ← 重要：隙間なくす */
+    "
+  >
+    <thead>
+      <tr>
+        {DAYS.map(d => (
+          <th
+            key={d}
+            className="
+              bg-emerald-50    /* 薄い色 */
+              text-emerald-700
+              font-semibold
+              py-2
+              border-b border-gray-200
+            "
+          >
+            {d}
+          </th>
+        ))}
+      </tr>
+    </thead>
+
+    <tbody>
+      {calendarRows.map((week, i) => (
+        <tr key={i}>
+          {week.map((date, j) => {
+            let log: DailyLog | undefined;
+
+            if (date) {
+              log = logs.find(l => l.date === date);
+              if (!log) {
+                log = {
+                  date,
+                  dayOfWeek: DAYS[new Date(date).getDay()],
+                  temp: '',
+                  humidity: '',
+                  feeding: '',
+                  waterChange: false,
+                  cleaning: false,
+                  poop: false,
+                  shed: false,
+                  notes: '',
+                };
+              }
+            }
+
+            return (
+              <CalendarCell
+                key={j}
+                date={date}
+                log={log}
+                onClick={() => {
+                  if (!date || !log) return;
+
+                  setSelectedDate(log);
+
+                  if (!logs.some(l => l.date === date)) {
+                    const newLogs = [...logs, log];
+                    setLogs(newLogs);
+                    saveAllLogs(newLogs);
                   }
-  
-                  return (
-                    <CalendarCell
-                      key={j}
-                      date={date}
-                      log={log}
-                      onClick={() => {
-                        if (!date || !log) return;
-  
-                        setSelectedDate(log);
-  
-                        if (!logs.some(l => l.date === date)) {
-                          const newLogs = [...logs, log];
-                          setLogs(newLogs);
-                          saveAllLogs(newLogs);
-                        }
-                      }}
-                    />
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                }}
+              />
+            );
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
       <div className="w-full max-w-5xl flex justify-start">
       <ExportZipButton
