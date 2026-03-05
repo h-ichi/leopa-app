@@ -1,4 +1,5 @@
 export interface DailyLog {
+  leopard: string;
   date: string;
   dayOfWeek: string;
   temp: string;
