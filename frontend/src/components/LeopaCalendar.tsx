@@ -99,39 +99,60 @@ const LeopaCalendar: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 flex flex-col items-center">
 
-      {/* ================= HEADER ================= */}
-      <div className="w-full max-w-5xl mb-6 rounded-3xl bg-white shadow p-6">
+{/* ================= HEADER ================= */}
 
-        <h2 className="text-3xl font-bold text-center mb-4">
-          {year}年{month}月
-        </h2>
+<div className="w-full max-w-5xl mb-6 rounded-3xl bg-white shadow px-6 py-5">
 
-        {/* ===== ★ 追加：個体タブ ===== */}
-        <div className="flex gap-2 mb-4 overflow-x-auto">
-          {LEOPARDS.map(name => (
-            <button
-              key={name}
-              onClick={() => setSelectedLeopard(name)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold
-                ${selectedLeopard === name
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-gray-100 text-gray-600'}
-              `}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
+  {/* タイトル */}
+  <div className="text-2xl font-bold tracking-widest text-emerald-600 mb-3">
+    LEOPA LOG
+  </div>
 
-        <div className="flex gap-3 justify-center">
-          <button onClick={handlePrevMonth} className="px-4 py-2 bg-emerald-500 text-white rounded">
-            ← 前月
-          </button>
-          <button onClick={handleNextMonth} className="px-4 py-2 bg-emerald-500 text-white rounded">
-            次月 →
-          </button>
-        </div>
-      </div>
+  {/* 月表示 + ナビ */}
+  <div className="flex items-center justify-center gap-6 mb-4">
+
+    <button
+      onClick={handlePrevMonth}
+      className="text-2xl font-bold text-gray-800 hover:text-black"
+    >
+      ＜
+    </button>
+
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+      {year}年{month}月
+    </h2>
+
+    <button
+      onClick={handleNextMonth}
+      className="text-2xl font-bold text-gray-800 hover:text-black"
+    >
+      ＞
+    </button>
+
+  </div>
+
+  {/* 個体タブ */}
+  <div className="flex gap-2 justify-center overflow-x-auto">
+    {LEOPARDS.map(name => (
+      <button
+        key={name}
+        onClick={() => setSelectedLeopard(name)}
+        className={`px-4 py-2 rounded-lg text-sm font-semibold transition
+          ${selectedLeopard === name
+            ? 'bg-emerald-500 text-white shadow'
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+        `}
+      >
+        {name}
+      </button>
+    ))}
+  </div>
+
+</div>
+     
+
+
+      
 
       {/* ================= CALENDAR ================= */}
       <div ref={calendarRef} className="w-full max-w-5xl rounded-2xl bg-white shadow overflow-auto">
