@@ -2,9 +2,12 @@ import type { DailyLog } from './types';
 
 const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
+const DEFAULT_LEOPARD = "レオパ1";
+
 export const sampleLogs: DailyLog[] = [
   {
     date: '',
+    leopard: DEFAULT_LEOPARD,
     dayOfWeek: '',
     temp: '28',
     humidity: '60',
@@ -15,11 +18,14 @@ export const sampleLogs: DailyLog[] = [
     shed: true,
     notes: '例：夜に活動多め',
   },
+
   ...Array.from({ length: 30 }, (_, i) => {
     const dateStr = `2025-10-${String(i + 2).padStart(2, '0')}`;
     const date = new Date(dateStr);
+
     return {
       date: dateStr,
+      leopard: DEFAULT_LEOPARD,   // ← 追加
       dayOfWeek: weekdays[date.getDay()],
       temp: '',
       humidity: '',
