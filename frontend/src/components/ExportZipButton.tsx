@@ -91,6 +91,7 @@ const ExportZipButton: React.FC<Props> = ({ logs, onImport }) => {
             shed: shed === '✔',
             notes,
             photoBase64,
+            leopard: '' 
           };
         })
       );
