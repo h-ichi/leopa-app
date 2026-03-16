@@ -14,9 +14,10 @@ const ExportZipButton: React.FC<Props> = ({ logs, onImport }) => {
     const zip = new JSZip();
 
     const headers = [
-      '日付','曜日','気温(℃)','湿度(%)','給餌','水換え','掃除','排便','脱皮','メモ','写真ファイル名'
+      '個体','日付','曜日','気温(℃)','湿度(%)','給餌','水換え','掃除','排便','脱皮','メモ','写真ファイル名'
     ];
     const rows = logs.map(log => [
+      log.leopard,
       log.date,
       log.dayOfWeek,
       log.temp,
@@ -69,7 +70,7 @@ const ExportZipButton: React.FC<Props> = ({ logs, onImport }) => {
       const importedLogs: DailyLog[] = await Promise.all(
         dataLines.map(async (line) => {
           const [
-            date, dayOfWeek, temp, humidity, feeding,
+            leopard, date, dayOfWeek, temp, humidity, feeding,
             waterChange, cleaning, poop, shed, notes, photoFile
           ] = line.split(',');
 
@@ -80,6 +81,7 @@ const ExportZipButton: React.FC<Props> = ({ logs, onImport }) => {
           }
 
           return {
+            leopard,
             date,
             dayOfWeek,
             temp,
@@ -91,7 +93,7 @@ const ExportZipButton: React.FC<Props> = ({ logs, onImport }) => {
             shed: shed === '✔',
             notes,
             photoBase64,
-            leopard: '' 
+            
           };
         })
       );
