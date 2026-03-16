@@ -1,15 +1,20 @@
-# 修正版 Dockerfile
 FROM node:20
 
 WORKDIR /app
 
-# package.json と package-lock.json をコピー
 COPY package*.json ./
-
 RUN npm install
 
-# 全てのソースコードをコピー
 COPY . .
 
-# 開発用コマンド
-CMD ["npm", "run", "dev"]
+# build
+RUN npm run build
+
+# SPA routing用
+RUN cp public/_redirects dist/_redirects
+
+# serve install
+RUN npm install -g serve
+
+# 本番起動
+CMD ["serve", "-s", "dist", "-l", "3000"]
