@@ -4,11 +4,14 @@ import LandingPage from "./pages/LandingPage";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import LeopaCalendar from "./components/LeopaCalendar";
-
+import AnalyticsTracker from "./AnalyticsTracker"; 
 
 const App: React.FC = () => {
   return (
     <HashRouter>
+      {/* 👇ここに入れる */}
+      <AnalyticsTracker />
+
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/app" element={<LeopaCalendar />} />
