@@ -13,7 +13,7 @@ export default function AnalyticsTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    const pagePath = location.pathname + location.search + location.hash;
+    const pagePath = location.hash || location.pathname;
 
     window.gtag("config", GA_ID, {
       page_path: pagePath,
