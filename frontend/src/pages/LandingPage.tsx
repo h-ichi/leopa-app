@@ -17,7 +17,7 @@ const LandingPage: React.FC = () => {
   <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
     給餌・掃除・脱皮・排便・温湿度管理まで<br />
     毎日の記録をワンタップで。<br />
-    レオパ専用の飼育ログアプリ。
+    レオパードゲッコー飼育ログアプリ。
   </p>
 
   <button
