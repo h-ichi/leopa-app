@@ -34,6 +34,31 @@ const LandingPage: React.FC = () => {
   </p>
 </section>
 
+{/* ================= ABOUT ================= */}
+<section className="py-20 px-6 bg-gray-50">
+  <div className="max-w-3xl mx-auto text-center bg-white p-10 rounded-2xl shadow">
+
+    <h2 className="text-3xl font-bold mb-8">
+      このアプリについて
+    </h2>
+
+    <p className="text-gray-600 leading-relaxed">
+      レオパードゲッコーを飼育している中で、
+      「昨日どうだったか思い出せない」と感じることがあり、趣味で作ったカレンダーアプリです。
+    </p>
+
+    <p className="text-gray-600 leading-relaxed mt-4">
+      世話のあとに軽く記録して、夜に「今日は大丈夫だったか」を確認する。
+      気になったときには過去のログを見返す、そんな使い方を想定しています。
+    </p>
+
+    <p className="text-gray-600 leading-relaxed mt-4">
+      かなりシンプルな作りですが、
+      もし合いそうであれば使ってみてください。
+    </p>
+
+  </div>
+</section>
 
 
       {/* ================= FEATURES ================= */}
@@ -150,6 +175,16 @@ const LandingPage: React.FC = () => {
   <Link to="/privacy" className="hover:underline">
     プライバシーポリシー
   </Link>
+
+  {/* 外部リンク */}
+  <a
+      href="https://leopa-blog.vercel.app/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:underline"
+    >
+      わたしのレオパBLOG
+    </a>
 </div>
 
 <div>
