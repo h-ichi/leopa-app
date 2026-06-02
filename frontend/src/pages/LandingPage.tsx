@@ -28,7 +28,7 @@ const LandingPage: React.FC = () => {
   </button>
 
   <p className="text-sm text-gray-500 mt-4 max-w-xl mx-auto">
-    ※入力データはユーザーごとのブラウザに保存されるため、
+    ※入力データはユーザー（端末）ごとのブラウザに保存されるため、
     アカウント登録なしですぐにカレンダーへ記録できます。
     注意：キャッシュクリアするとデータは消失します。
   </p>
@@ -183,7 +183,7 @@ const LandingPage: React.FC = () => {
       rel="noopener noreferrer"
       className="hover:underline"
     >
-      わたしのレオパBLOG
+      まいげっこ BLOG
     </a>
 </div>
 
