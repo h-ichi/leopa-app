@@ -9,7 +9,6 @@ import AnalyticsTracker from "./AnalyticsTracker";
 const App: React.FC = () => {
   return (
     <HashRouter>
-      {/* 👇ここに入れる */}
       <AnalyticsTracker />
 
       <Routes>

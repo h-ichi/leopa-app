@@ -178,7 +178,7 @@ const LandingPage: React.FC = () => {
 
   {/* 外部リンク */}
   <a
-      href="https://leopa-blog.vercel.app/"
+      href="https://mygekkoblog.com/"
       target="_blank"
       rel="noopener noreferrer"
       className="hover:underline"
