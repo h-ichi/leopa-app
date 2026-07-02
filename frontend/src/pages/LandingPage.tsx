@@ -88,6 +88,37 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* 使用イメージ */}
+<section className="py-16 bg-gray-50">
+  <div className="max-w-6xl mx-auto px-6">
+    <h2 className="text-3xl font-bold text-center mb-4">
+      使用イメージ
+    </h2>
+
+    <p className="text-center text-gray-600 mb-10">
+      LEOPA LOGで記録・管理する画面のイメージです。
+    </p>
+
+    <div className="grid md:grid-cols-2 gap-8">
+      <div className="rounded-xl overflow-hidden shadow-lg">
+      <img
+  src="/images/nyuryokugamen.png"
+  alt="入力画面"
+  className="w-64 md:w-72 lg:w-80 h-auto mx-auto"
+/>
+      </div>
+
+      <div className="rounded-xl overflow-hidden shadow-lg">
+        <img
+          src="/images/kirokugamen.png"
+          alt="記録一覧画面"
+          className="w-full"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
       {/* ================= HOW TO USE ================= */}
 
 <section className="py-20 bg-gray-50">
