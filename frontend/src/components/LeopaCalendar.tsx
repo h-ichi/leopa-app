@@ -105,7 +105,7 @@ const LeopaCalendar: React.FC = () => {
 
   {/* タイトル */}
   <div className="text-2xl font-bold tracking-widest text-emerald-600 mb-3">
-    LEOPA LOG
+    Loepa Log Calendar
   </div>
 
   {/* 月表示 + ナビ */}

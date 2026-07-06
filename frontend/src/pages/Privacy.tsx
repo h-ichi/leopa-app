@@ -4,7 +4,7 @@ export default function Privacy() {
       <h1 className="text-3xl font-bold mb-6">プライバシーポリシー</h1>
 
       <p className="mb-4">
-        LEOPA LOG（以下「本サービス」）では、利用者のプライバシーを尊重し、
+        Leopa Log Calendar（以下「本サービス」）では、利用者のプライバシーを尊重し、
         個人情報の保護に努めます。
       </p>
 

@@ -11,7 +11,8 @@ const LandingPage: React.FC = () => {
       {/* ================= HERO ================= */}
 <section className="py-24 text-center px-6">
   <h1 className="text-5xl font-bold mb-6">
-    LEOPA LOG
+    Leopa Log Calendar 
+    
   </h1>
 
   <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -96,7 +97,7 @@ const LandingPage: React.FC = () => {
     </h2>
 
     <p className="text-center text-gray-600 mb-10">
-      LEOPA LOGで記録・管理する画面のイメージです。
+      Leopa Log Calendarで記録・管理する画面のイメージです。
     </p>
 
     <div className="grid md:grid-cols-2 gap-8">
@@ -110,7 +111,7 @@ const LandingPage: React.FC = () => {
 
       <div className="rounded-xl overflow-hidden shadow-lg">
         <img
-          src="/images/kirokugamen.png"
+          src="/images/LP.png"
           alt="記録一覧画面"
           className="w-full"
         />
@@ -216,10 +217,21 @@ const LandingPage: React.FC = () => {
     >
       まいげっこ BLOG
     </a>
+
+    <a
+      href="https://mygekkoblog.com/contact"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:underline"
+    >
+      お問い合わせ
+    </a>
+
+    
 </div>
 
 <div>
-  © 2026 Leopa Log
+  © 2026 Leopa Log Calendar
 </div>
 
 </footer>
